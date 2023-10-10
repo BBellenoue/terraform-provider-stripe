@@ -536,7 +536,12 @@ func resourceStripePriceCreate(ctx context.Context, d *schema.ResourceData, m in
 				case k == "flat_amount_decimal":
 					priceTier.FlatAmountDecimal = NonZeroFloat64(v)
 				case k == "unit_amount":
-					priceTier.UnitAmount = NonZeroInt64(v)
+					amount := ToInt64(v)
+					// amount is -1 when free price is required
+					if amount < 0 {
+						amount = 0
+					}
+					priceTier.UnitAmount = stripe.Int64(amount)
 				case k == "unit_amount_decimal":
 					priceTier.UnitAmountDecimal = NonZeroFloat64(v)
 				}
